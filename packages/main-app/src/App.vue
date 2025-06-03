@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useRoute } from 'vue-router'
 
-const currentApp = ref("main");
+const route = useRoute()
 </script>
 
 <template>
@@ -9,35 +9,19 @@ const currentApp = ref("main");
     <header class="header">
       <h1>微前端 Qiankun Demo</h1>
       <div class="nav">
-        <a
-          @click="currentApp = 'main'"
-          :class="{ active: currentApp === 'main' }"
-          >主应用</a
+        <router-link to="/" :class="{ active: route?.path === '/' }"
+          >主应用</router-link
         >
-        <a
-          href="/sub-app-1"
-          @click="currentApp = 'sub-app-1'"
-          :class="{ active: currentApp === 'sub-app-1' }"
-          >子应用1</a
+        <router-link
+          to="/sub-app-1"
+          :class="{ active: route?.path.startsWith('/sub-app-1') }"
+          >子应用1</router-link
         >
       </div>
     </header>
 
     <div class="content">
-      <div v-show="currentApp === 'main'" class="main-content">
-        <h2>这是主应用内容</h2>
-        <div class="logo-container">
-          <a href="https://vite.dev" target="_blank">
-            <img src="/vite.svg" class="logo" alt="Vite logo" />
-          </a>
-          <a href="https://vuejs.org/" target="_blank">
-            <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-          </a>
-        </div>
-      </div>
-
-      <!-- 子应用容器 -->
-      <div id="sub-app-container"></div>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -98,5 +82,6 @@ const currentApp = ref("main");
 
 .content {
   margin-top: 30px;
+  min-height: 400px;
 }
 </style>
