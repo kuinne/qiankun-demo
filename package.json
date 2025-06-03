@@ -1,0 +1,17 @@
+{
+  "name": "qiankun-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --filter=./packages/* run dev",
+    "build": "pnpm -r --filter=./packages/* run build",
+    "clean": "rm -rf node_modules && pnpm -r --filter=./packages/* run clean"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=7.0.0"
+  },
+  "dependencies": {
+    "qiankun": "^2.10.16"
+  }
+}
