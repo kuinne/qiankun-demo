@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
 
-const route = useRoute()
+const route = useRoute();
 </script>
 
 <template>
@@ -16,6 +16,11 @@ const route = useRoute()
           to="/sub-app-1"
           :class="{ active: route?.path.startsWith('/sub-app-1') }"
           >子应用1</router-link
+        >
+        <router-link
+          to="/sub-app-2"
+          :class="{ active: route?.path.startsWith('/sub-app-2') }"
+          >子应用2</router-link
         >
       </div>
     </header>
