@@ -76,7 +76,8 @@ pre {
 
 
 <style>
-pre {
-  background-color: #fff;
+.card, .home > p {
+  color: red;
+
 }
 </style>

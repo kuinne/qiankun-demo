@@ -1,13 +1,13 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import qiankun from "vite-plugin-qiankun";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import qiankun from 'vite-plugin-qiankun'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "http://localhost:4173/",
+  base: '/',
   plugins: [
     vue(),
-    qiankun("sub-app-2", {
+    qiankun('sub-app-2', {
       useDevMode: true, // 开发模式启用特殊配置
     }),
   ],
@@ -15,4 +15,4 @@ export default defineConfig({
     port: 5002,
     cors: true,
   },
-});
+})

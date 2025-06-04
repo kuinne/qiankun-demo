@@ -9,9 +9,9 @@
 // 组件逻辑
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .home {
   padding: 20px;
   text-align: center;
 }
-</style>
+</style> -->
