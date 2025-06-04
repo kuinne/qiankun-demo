@@ -26,6 +26,11 @@ const containerRef = ref<HTMLElement | null>(null);
 const currentPath = ref(route.path);
 const lastNotifiedPath = ref("");
 
+// 判断是否是子应用路由
+const isSubAppRoute = (path: string): boolean => {
+  return path.startsWith("/sub-app/");
+};
+
 // 通知主应用容器已准备好
 const notifyContainerReady = () => {
   console.log("通知容器准备好，当前路径:", route.path);
@@ -55,18 +60,14 @@ watch(
     if (newPath !== oldPath) {
       currentPath.value = newPath;
       // 如果是切换到子应用路由
-      if (
-        newPath.startsWith("/sub-app-1") ||
-        newPath.startsWith("/sub-app-2")
-      ) {
+      if (isSubAppRoute(newPath)) {
         // 如果是从主应用来，或者从其他子应用来
+        const oldAppName = oldPath?.match(/\/sub-app\/([^\/]+)/)?.[1];
+        const newAppName = newPath.match(/\/sub-app\/([^\/]+)/)?.[1];
+
         if (
-          (!oldPath?.startsWith("/sub-app-1") &&
-            !oldPath?.startsWith("/sub-app-2")) ||
-          (oldPath?.startsWith("/sub-app-1") &&
-            newPath.startsWith("/sub-app-2")) ||
-          (oldPath?.startsWith("/sub-app-2") &&
-            newPath.startsWith("/sub-app-1"))
+          !isSubAppRoute(oldPath || "") || // 从主应用来
+          (oldAppName && newAppName && oldAppName !== newAppName) // 从不同子应用来
         ) {
           console.log("切换到子应用，触发容器准备事件");
           loading.value = true;

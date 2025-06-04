@@ -4,6 +4,24 @@ import App from "./App.vue";
 import { initGlobalState, loadMicroApp } from "qiankun";
 import router from "./router";
 
+// 子应用配置列表
+const microApps = [
+  {
+    name: "sub-app-1",
+    entry: "//localhost:5001",
+    activeRule: "/sub-app/sub-app-1",
+    container: "#sub-app-viewport",
+    defaultPath: "/sub-app/sub-app-1",
+  },
+  {
+    name: "sub-app-2",
+    entry: "//localhost:5002",
+    activeRule: "/sub-app/sub-app-2",
+    container: "#sub-app-viewport",
+    defaultPath: "/sub-app/sub-app-2",
+  },
+];
+
 // 初始化全局状态
 const { onGlobalStateChange, setGlobalState } = initGlobalState({
   message: "hello from main-app",
@@ -29,6 +47,16 @@ function render() {
 }
 
 render();
+
+// 判断是否是子应用路由
+function isSubAppRoute(path: string): boolean {
+  return path.startsWith("/sub-app/");
+}
+
+// 根据路径获取子应用配置
+function getSubAppByPath(path: string): any {
+  return microApps.find((app) => path.startsWith(app.activeRule));
+}
 
 // 子应用管理
 class MicroAppManager {
@@ -230,24 +258,22 @@ window.addEventListener("container-ready", async (event: any) => {
     const currentPath = event.detail.path || router.currentRoute.value.path;
     console.log(`容器准备好，准备加载子应用，当前路径: ${currentPath}`);
 
+    // 获取当前路径对应的子应用配置
+    const subAppConfig = getSubAppByPath(currentPath);
+    if (!subAppConfig) {
+      console.log(`当前路径 ${currentPath} 没有对应的子应用配置`);
+      return;
+    }
+
     // 如果当前已有子应用在运行，且与目标路径不匹配，先卸载
     const currentAppName = microAppManager.getCurrentAppName();
     if (currentAppName) {
-      if (
-        (currentAppName === "sub-app-1" &&
-          !currentPath.startsWith("/sub-app-1")) ||
-        (currentAppName === "sub-app-2" &&
-          !currentPath.startsWith("/sub-app-2"))
-      ) {
+      if (currentAppName !== subAppConfig.name) {
         console.log(
           `当前子应用 ${currentAppName} 与路径 ${currentPath} 不匹配，准备卸载`
         );
         await microAppManager.unmount(currentAppName);
-      } else if (
-        (currentAppName === "sub-app-1" &&
-          currentPath.startsWith("/sub-app-1")) ||
-        (currentAppName === "sub-app-2" && currentPath.startsWith("/sub-app-2"))
-      ) {
+      } else {
         console.log(
           `当前子应用 ${currentAppName} 与路径 ${currentPath} 匹配，无需重新加载`
         );
@@ -255,14 +281,9 @@ window.addEventListener("container-ready", async (event: any) => {
       }
     }
 
-    // 根据路径加载相应的子应用
-    if (currentPath.startsWith("/sub-app-1")) {
-      console.log("准备加载子应用1");
-      await microAppManager.mount("sub-app-1", "//localhost:5001");
-    } else if (currentPath.startsWith("/sub-app-2")) {
-      console.log("准备加载子应用2");
-      await microAppManager.mount("sub-app-2", "//localhost:5002");
-    }
+    // 加载子应用
+    console.log(`准备加载子应用 ${subAppConfig.name}`);
+    await microAppManager.mount(subAppConfig.name, subAppConfig.entry);
   }
 });
 
@@ -270,19 +291,19 @@ window.addEventListener("container-ready", async (event: any) => {
 router.beforeEach(async (to, from, next) => {
   console.log(`路由守卫 - 路由变化: 从 ${from.path} 到 ${to.path}`);
   try {
+    const isToSubApp = isSubAppRoute(to.path);
+    const isFromSubApp = isSubAppRoute(from.path);
     const currentAppName = microAppManager.getCurrentAppName();
 
     // 如果要去子应用路由
-    if (to.path.startsWith("/sub-app-1") || to.path.startsWith("/sub-app-2")) {
+    if (isToSubApp) {
+      // 获取目标子应用配置
+      const toSubAppConfig = getSubAppByPath(to.path);
+
       // 如果从主应用来，或者从不同的子应用来，需要确保先卸载当前子应用
       if (
-        (!from.path.startsWith("/sub-app-1") &&
-          !from.path.startsWith("/sub-app-2")) ||
-        (currentAppName &&
-          ((currentAppName === "sub-app-1" &&
-            !to.path.startsWith("/sub-app-1")) ||
-            (currentAppName === "sub-app-2" &&
-              !to.path.startsWith("/sub-app-2"))))
+        !isFromSubApp ||
+        (currentAppName && currentAppName !== toSubAppConfig?.name)
       ) {
         console.log("从主应用或其他子应用切换，需要卸载当前子应用");
         if (currentAppName) {
@@ -290,7 +311,7 @@ router.beforeEach(async (to, from, next) => {
         }
       }
     } else {
-      // 如果要去主应用路由，卸载当前子应用
+      // 如果去往主应用，卸载当前子应用
       if (currentAppName) {
         console.log("切换到主应用，卸载当前子应用");
         await microAppManager.unmount(currentAppName);

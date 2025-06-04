@@ -23,8 +23,9 @@ const routes: RouteRecordRaw[] = [
 // 判断是否是微前端环境
 const isQiankun = qiankunWindow.__POWERED_BY_QIANKUN__;
 
+// 在微前端环境中使用 /sub-app/sub-app-2 作为基础路径
 const router = createRouter({
-  history: createWebHistory(isQiankun ? "/sub-app-2" : "/"),
+  history: createWebHistory(isQiankun ? "/sub-app/sub-app-2" : "/"),
   routes,
 });
 

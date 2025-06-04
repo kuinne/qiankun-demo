@@ -7,14 +7,10 @@ const routes: RouteRecordRaw[] = [
     name: "Home",
     component: () => import("../views/Home.vue"),
   },
+  // 通用子应用路由，用于处理未知子应用
   {
-    path: "/sub-app-1/:page*",
-    name: "SubApp1",
-    component: () => import("../views/SubAppContainer.vue"),
-  },
-  {
-    path: "/sub-app-2/:page*",
-    name: "SubApp2",
+    path: "/sub-app/:appName/:page*",
+    name: "SubAppGeneric",
     component: () => import("../views/SubAppContainer.vue"),
   },
 ];

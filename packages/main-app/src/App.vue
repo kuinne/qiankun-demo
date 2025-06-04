@@ -1,7 +1,33 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import { ref, computed } from "vue";
 
 const route = useRoute();
+
+// 子应用配置列表，与main.ts中保持一致
+const microApps = [
+  {
+    name: "sub-app-1",
+    entry: "//localhost:5001",
+    activeRule: "/sub-app/sub-app-1",
+    container: "#sub-app-viewport",
+    defaultPath: "/sub-app/sub-app-1",
+    title: "子应用1",
+  },
+  {
+    name: "sub-app-2",
+    entry: "//localhost:5002",
+    activeRule: "/sub-app/sub-app-2",
+    container: "#sub-app-viewport",
+    defaultPath: "/sub-app/sub-app-2",
+    title: "子应用2",
+  },
+];
+
+// 判断当前路径是否属于某个子应用
+const isActiveApp = (appActiveRule: string) => {
+  return route?.path.startsWith(appActiveRule);
+};
 </script>
 
 <template>
@@ -13,15 +39,13 @@ const route = useRoute();
           >主应用</router-link
         >
         <router-link
-          to="/sub-app-1"
-          :class="{ active: route?.path.startsWith('/sub-app-1') }"
-          >子应用1</router-link
+          v-for="app in microApps"
+          :key="app.name"
+          :to="app.defaultPath"
+          :class="{ active: isActiveApp(app.activeRule) }"
         >
-        <router-link
-          to="/sub-app-2"
-          :class="{ active: route?.path.startsWith('/sub-app-2') }"
-          >子应用2</router-link
-        >
+          {{ app.title }}
+        </router-link>
       </div>
     </header>
 
