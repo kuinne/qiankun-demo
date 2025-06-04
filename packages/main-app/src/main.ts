@@ -243,11 +243,15 @@ window.addEventListener("container-ready", async (event: any) => {
           `当前子应用 ${currentAppName} 与路径 ${currentPath} 不匹配，准备卸载`
         );
         await microAppManager.unmount(currentAppName);
-      } else {
+      } else if (
+        (currentAppName === "sub-app-1" &&
+          currentPath.startsWith("/sub-app-1")) ||
+        (currentAppName === "sub-app-2" && currentPath.startsWith("/sub-app-2"))
+      ) {
         console.log(
           `当前子应用 ${currentAppName} 与路径 ${currentPath} 匹配，无需重新加载`
         );
-        return; // 如果已经加载了匹配的子应用，不需要重新加载
+        return;
       }
     }
 
@@ -263,9 +267,38 @@ window.addEventListener("container-ready", async (event: any) => {
 });
 
 // 路由守卫
-router.beforeEach(async (to: any, from: any, next: any) => {
-  console.log(`路由变化: 从 ${from.path} 到 ${to.path}`);
+router.beforeEach(async (to, from, next) => {
+  console.log(`路由守卫 - 路由变化: 从 ${from.path} 到 ${to.path}`);
+  try {
+    const currentAppName = microAppManager.getCurrentAppName();
 
-  // 不管是什么情况，都先放行路由
-  next();
+    // 如果要去子应用路由
+    if (to.path.startsWith("/sub-app-1") || to.path.startsWith("/sub-app-2")) {
+      // 如果从主应用来，或者从不同的子应用来，需要确保先卸载当前子应用
+      if (
+        (!from.path.startsWith("/sub-app-1") &&
+          !from.path.startsWith("/sub-app-2")) ||
+        (currentAppName &&
+          ((currentAppName === "sub-app-1" &&
+            !to.path.startsWith("/sub-app-1")) ||
+            (currentAppName === "sub-app-2" &&
+              !to.path.startsWith("/sub-app-2"))))
+      ) {
+        console.log("从主应用或其他子应用切换，需要卸载当前子应用");
+        if (currentAppName) {
+          await microAppManager.unmount(currentAppName);
+        }
+      }
+    } else {
+      // 如果要去主应用路由，卸载当前子应用
+      if (currentAppName) {
+        console.log("切换到主应用，卸载当前子应用");
+        await microAppManager.unmount(currentAppName);
+      }
+    }
+    next();
+  } catch (error) {
+    console.error("路由守卫中发生错误:", error);
+    next();
+  }
 });
