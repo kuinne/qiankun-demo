@@ -35,7 +35,8 @@ const count = ref(0)
   </div>
 </template>
 
-<style scoped>
+<!-- <style scoped>
+ 
 .sub-app-2 {
   width: 100%;
   max-width: 1280px;
@@ -71,4 +72,11 @@ pre {
   text-align: left;
   overflow: auto;
 }
-</style> 
+</style>  -->
+
+
+<style>
+pre {
+  background-color: #fff;
+}
+</style>

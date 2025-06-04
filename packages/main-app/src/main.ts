@@ -18,7 +18,8 @@ const microApps: MicroAppConfig[] = [
   },
   {
     name: "sub-app-2",
-    entry: "//localhost:5002",
+    // entry: "//localhost:5002",
+    entry: "//localhost:4173",
     activeRule: "/sub-app/sub-app-2",
     container: "#sub-app-viewport",
     defaultPath: "/sub-app/sub-app-2",
@@ -114,7 +115,7 @@ router.beforeEach(async (to, from, next) => {
         !isFromSubApp ||
         (currentAppName && currentAppName !== toSubAppConfig?.name)
       ) {
-        console.log("从主应用或其他子应用切换，需要卸载当前子应用");
+        // 从主应用或其他子应用切换，需要卸载当前子应用
         if (currentAppName) {
           await microAppManager.unmount(currentAppName);
         }
@@ -122,7 +123,6 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 如果去往主应用，卸载当前子应用
       if (currentAppName) {
-        console.log("切换到主应用，卸载当前子应用");
         await microAppManager.unmount(currentAppName);
       }
     }

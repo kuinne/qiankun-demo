@@ -56,7 +56,7 @@ const isActiveApp = (appActiveRule: string) => {
     </div>
   </div>
 </template>
-
+<!-- 
 <style scoped>
 .main-app {
   font-family: Arial, sans-serif;
@@ -115,4 +115,4 @@ const isActiveApp = (appActiveRule: string) => {
   margin-top: 30px;
   min-height: 400px;
 }
-</style>
+</style> -->

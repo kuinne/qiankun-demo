@@ -109,7 +109,7 @@ onDeactivated(() => {
 });
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .sub-app-container {
   padding: 20px;
   position: relative;
@@ -141,4 +141,4 @@ onDeactivated(() => {
 #sub-app-viewport {
   min-height: 300px;
 }
-</style>
+</style> -->

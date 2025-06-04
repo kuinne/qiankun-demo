@@ -4,7 +4,7 @@ import qiankun from "vite-plugin-qiankun";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/",
+  base: "http://localhost:4173/",
   plugins: [
     vue(),
     qiankun("sub-app-2", {

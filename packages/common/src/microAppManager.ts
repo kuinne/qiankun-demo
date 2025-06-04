@@ -190,18 +190,25 @@ export class MicroAppManager {
     try {
       console.log(`开始加载子应用 ${appName}...`);
 
-      this.microApps[appName] = loadMicroApp({
-        name: appName,
-        entry: entry,
-        container: container,
-        props: {
-          initialState: {
-            message: "hello from main-app",
-            from: "main-app",
-            timestamp: new Date().getTime(),
+      this.microApps[appName] = loadMicroApp(
+        {
+          name: appName,
+          entry: entry,
+          container: container,
+          props: {
+            initialState: {
+              message: "hello from main-app",
+              from: "main-app",
+              timestamp: new Date().getTime(),
+            },
           },
         },
-      });
+        {
+          sandbox: {
+            experimentalStyleIsolation: true,
+          },
+        }
+      );
 
       await this.microApps[appName].mountPromise;
       this.currentAppName = appName;

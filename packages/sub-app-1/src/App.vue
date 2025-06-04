@@ -1,50 +1,50 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { setGlobalState, globalState } from './main'
+import { ref, onMounted, watch, reactive } from "vue";
+import { useRoute } from "vue-router";
+import { setGlobalState, globalState } from "./main";
 
-const message = ref('')
-const receivedMsg = ref('')
-const route = useRoute()
+const message = ref("");
+const receivedMsg = ref("");
+const route = useRoute();
 
 // 发送消息到主应用
 const sendMessageToMain = () => {
   if (setGlobalState) {
     setGlobalState({
       message: message.value,
-      from: 'sub-app-1',
+      from: "sub-app-1",
       timestamp: new Date().getTime(),
-    })
+    });
   }
-}
+};
 
 // 修改主应用背景色
 const changeBody = () => {
-  document.body.style.backgroundColor = 'red'
-}
+  document.body.style.backgroundColor = "red";
+};
 
 // 监听全局状态变化
 watch(
   () => globalState.message,
   (newVal, oldVal) => {
-    console.log('watch globalState.message 变化:', newVal, oldVal)
+    console.log("watch globalState.message 变化:", newVal, oldVal);
     if (newVal) {
-      receivedMsg.value = newVal
+      receivedMsg.value = newVal;
     }
   },
   { immediate: true }
-)
+);
 
 // 组件挂载时
 onMounted(() => {
-  console.log('子应用 globalState.message:', globalState.message)
-  console.log('子应用 整个 globalState:', globalState)
+  console.log("子应用 globalState.message:", globalState.message);
+  console.log("子应用 整个 globalState:", globalState);
 
   // 如果已经有值，直接使用
   if (globalState.message) {
-    receivedMsg.value = globalState.message
+    receivedMsg.value = globalState.message;
   }
-})
+});
 </script>
 
 <template>
@@ -94,7 +94,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<!-- <style scoped>
 .sub-app {
   font-family: Arial, sans-serif;
   padding: 20px;
@@ -143,7 +143,6 @@ onMounted(() => {
 .debug-info {
   margin: 15px 0;
   padding: 10px;
-  background-color: #f8f8f8;
   border: 1px dashed #ccc;
   border-radius: 4px;
 }
@@ -179,5 +178,11 @@ button {
 
 button:hover {
   background-color: #3aa876;
+}
+</style> -->
+
+<style>
+pre {
+  color: yellow;
 }
 </style>
