@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm -r --filter=./packages/* run dev",
+    "dev": "pnpm --parallel -r --filter=./packages/* run dev",
     "build": "pnpm -r --filter=./packages/* run build",
     "clean": "rm -rf node_modules && pnpm -r --filter=./packages/* run clean"
   },

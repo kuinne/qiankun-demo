@@ -1,0 +1,24 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "description": "通用依赖包，包含子应用管理逻辑",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "qiankun": "^2.10.13",
+    "vue": "^3.5.13",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  },
+  "peerDependencies": {
+    "qiankun": "^2.10.13",
+    "vue": "^3.5.13",
+    "vue-router": "4"
+  }
+}

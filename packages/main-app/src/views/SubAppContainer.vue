@@ -18,6 +18,7 @@ import {
   watch,
 } from "vue";
 import { useRoute } from "vue-router";
+import { isSubAppRoute, extractSubAppName } from "common";
 
 const route = useRoute();
 const loading = ref(true);
@@ -25,11 +26,6 @@ const error = ref("");
 const containerRef = ref<HTMLElement | null>(null);
 const currentPath = ref(route.path);
 const lastNotifiedPath = ref("");
-
-// 判断是否是子应用路由
-const isSubAppRoute = (path: string): boolean => {
-  return path.startsWith("/sub-app/");
-};
 
 // 通知主应用容器已准备好
 const notifyContainerReady = () => {
@@ -62,8 +58,8 @@ watch(
       // 如果是切换到子应用路由
       if (isSubAppRoute(newPath)) {
         // 如果是从主应用来，或者从其他子应用来
-        const oldAppName = oldPath?.match(/\/sub-app\/([^\/]+)/)?.[1];
-        const newAppName = newPath.match(/\/sub-app\/([^\/]+)/)?.[1];
+        const oldAppName = extractSubAppName(oldPath || "");
+        const newAppName = extractSubAppName(newPath);
 
         if (
           !isSubAppRoute(oldPath || "") || // 从主应用来

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
+import { isSubAppRoute } from "common";
+import type { MicroAppConfig } from "common";
 
 const route = useRoute();
 
 // 子应用配置列表，与main.ts中保持一致
-const microApps = [
+const microApps: MicroAppConfig[] = [
   {
     name: "sub-app-1",
     entry: "//localhost:5001",

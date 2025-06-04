@@ -16,8 +16,30 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15(typescript@5.8.3)(vite@6.3.5)
 
+  packages/common:
+    dependencies:
+      qiankun:
+        specifier: ^2.10.13
+        version: 2.10.16
+      vue:
+        specifier: ^3.5.13
+        version: 3.5.16(typescript@5.8.3)
+      vue-router:
+        specifier: '4'
+        version: 4.5.1(vue@3.5.16(typescript@5.8.3))
+    devDependencies:
+      typescript:
+        specifier: ~5.8.3
+        version: 5.8.3
+
   packages/main-app:
     dependencies:
+      common:
+        specifier: workspace:*
+        version: link:../common
+      qiankun:
+        specifier: ^2.10.13
+        version: 2.10.16
       vue:
         specifier: ^3.5.13
         version: 3.5.16(typescript@5.8.3)
