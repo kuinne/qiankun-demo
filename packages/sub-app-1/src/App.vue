@@ -50,7 +50,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="sub-app">
+  <div class="sub-app-1">
     <h2>这是子应用1</h2>
 
     <nav class="sub-nav">
@@ -97,7 +97,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.sub-app {
+.sub-app-1 {
   font-family: Arial, sans-serif;
   padding: 20px;
   border: 2px solid #42b883;

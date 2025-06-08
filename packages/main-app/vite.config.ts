@@ -12,10 +12,11 @@ export default defineConfig({
     ElementPlus({
       // options
     }),
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
+    // AutoImport({
+    //   resolvers: [ElementPlusResolver()],
+    // }),
     Components({
+      dts: false,
       resolvers: [ElementPlusResolver()],
     }),
   ],

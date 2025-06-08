@@ -3,6 +3,7 @@ import { createApp, reactive } from 'vue'
 import './style.scss'
 import App from './App.vue'
 import router from './router'
+
 import {
   renderWithQiankun,
   qiankunWindow,

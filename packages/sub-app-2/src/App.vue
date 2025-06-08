@@ -66,7 +66,7 @@ nav a.router-link-active {
 }
 
 pre {
-  background-color: #f1f1f1;
+  background-color: #eeeaea;
   padding: 1rem;
   border-radius: 8px;
   color: #333;

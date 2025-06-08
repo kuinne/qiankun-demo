@@ -9,7 +9,9 @@
             v-for="app in microApps"
             :key="app.name"
             :index="app.defaultPath"
-            :class="{ 'is-active': isActiveApp(app.activeRule) }"
+            :class="{
+              'is-active': currentRouteApp?.activeRule === app.activeRule,
+            }"
           >
             {{ app.title }}
           </el-menu-item>
@@ -19,10 +21,10 @@
 
     <el-container class="main-container">
       <el-aside width="200px">
-        <template v-if="currentApp">
+        <template v-if="currentRouteApp">
           <el-menu router class="sub-menu" :default-active="route.path">
             <el-menu-item
-              v-for="item of currentApp.menus"
+              v-for="item of currentRouteApp.menus"
               :key="item.path"
               :index="item.path"
             >
@@ -53,9 +55,11 @@ import {
 } from 'element-plus'
 import { useMicroApps } from '../hooks/useMicroApps'
 import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 const route = useRoute()
-const { microApps, isActiveApp, currentApp } = useMicroApps()
+const { microApps, getMicroAppByPath } = useMicroApps()
+const currentRouteApp = computed(() => getMicroAppByPath(route.path))
 </script>
 
 <style scoped>
