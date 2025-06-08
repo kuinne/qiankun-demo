@@ -1,60 +1,43 @@
 import type { Plugin } from 'vite'
-import type { Root, Rule } from 'postcss'
 import postcss from 'postcss'
-import selectorParser from 'postcss-selector-parser'
 
 // 生成 Qiankun 样式隔离前缀
-const generateScope = (appName: string) => `[data-qiankun="${appName}"]`
-
-// 处理 CSS 选择器
-const processRule = (rule: Rule, scope: string) => {
-  if (rule.selector.startsWith('[data]')) return
-  const newSelector = selectorParser((selectors) => {
-    selectors.walk((selector) => {
-      if (selector.type === 'selector') {
-        let hasInserted = false
-        const nodes: selectorParser.Node[] = []
-
-        selector.each((node) => {
-          if (!hasInserted) {
-            // 创建属性选择器节点
-            const attrNode = selectorParser.attribute({
-              attribute: 'href',
-              raws: {},
-              value: '',
-            })
-
-            nodes.push(attrNode)
-            hasInserted = true
-          }
-          nodes.push(node.clone())
-        })
-
-        // selector.nodes = nodes
-      }
-    })
-  }).processSync(rule.selector)
-  console.log('newSelector11', newSelector)
-  rule.selector = newSelector
-}
+const generateScope = (appName: string) => `div[data-qiankun=${appName}]`
 
 export default (appName: string): Plugin => {
-  const scope = generateScope(appName)
+  const scopeSelector = generateScope(appName)
 
   return {
     name: 'vite-plugin-qiankun-css',
     enforce: 'pre',
 
     transform(code, id, options) {
-      if (!/\.(css|scss|sass|less|styl)$/.test(id)) return
+      if (!/\.(css|scss|sass|less|styl|vue?vue&type=style)$/.test(id)) return
 
       try {
         const result = postcss([
           {
             postcssPlugin: 'qiankun-scope-plugin',
-            Rule(rule) {
-              // console.log('rule', rule)
-              processRule(rule, scope)
+            Root(root, helper) {
+              root.walkRules((rule) => {
+                // 跳过关键帧规则
+                if (rule.parent && rule.parent?.name === 'keyframes') return
+                // 处理媒体查询内的规则
+                if (
+                  rule.parent?.type === 'atrule' &&
+                  rule.parent?.name === 'media'
+                ) {
+                  rule.selectors = rule.selectors.map(
+                    (selector) => `${scopeSelector} ${selector}`
+                  )
+                }
+                // 处理普通规则
+                if (rule.parent?.type === 'root') {
+                  rule.selectors = rule.selectors.map(
+                    (selector) => `${scopeSelector} ${selector}`
+                  )
+                }
+              })
             },
           },
         ]).process(code, {
@@ -62,15 +45,14 @@ export default (appName: string): Plugin => {
           to: id,
           map: false,
         })
-        console.log('result.css', result.css)
 
         return {
           code: result.css,
         }
       } catch (error) {
         console.error(
-          `[vite-plugin-qiankun-css] Error processing ${id}:`,
-          error
+          `[vite-plugin-qiankun-css] Error processing ${id}:`
+          // error
         )
         return null
       }

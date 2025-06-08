@@ -5,6 +5,7 @@ import { globalState, setGlobalState } from './main'
 
 const router = useRouter()
 const count = ref(0)
+console.log('subApp000000000000', window.subApp)
 </script>
 
 <template>
@@ -35,7 +36,7 @@ const count = ref(0)
   </div>
 </template>
 
-<!-- <style scoped>
+<style scoped>
  
 .sub-app-2 {
   width: 100%;
@@ -72,12 +73,6 @@ pre {
   text-align: left;
   overflow: auto;
 }
-</style>  -->
+</style> 
 
 
-<style>
-.card, .home > p {
-  color: red;
-
-}
-</style>

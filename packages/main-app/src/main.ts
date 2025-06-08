@@ -10,7 +10,7 @@ import type { MicroAppConfig } from 'common'
 const microApps: MicroAppConfig[] = [
   {
     name: 'sub-app-1',
-    entry: '//localhost:5002',
+    entry: '//localhost:5001',
     activeRule: '/sub-app/sub-app-1',
     container: '#sub-app-viewport',
     defaultPath: '/sub-app/sub-app-1',
@@ -18,7 +18,7 @@ const microApps: MicroAppConfig[] = [
   },
   {
     name: 'sub-app-2',
-    entry: '//localhost:5003',
+    entry: '//localhost:5002',
     activeRule: '/sub-app/sub-app-2',
     container: '#sub-app-viewport',
     defaultPath: '/sub-app/sub-app-2',

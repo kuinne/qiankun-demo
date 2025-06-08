@@ -1,7 +1,7 @@
 // @ts-ignore
-
+import './public-path.js'
 import { createApp, reactive } from 'vue'
-import './style.css'
+import './style.scss'
 import App from './App.vue'
 import router from './router'
 import {
@@ -31,16 +31,18 @@ function render(props: any = {}) {
 
   // 初始化全局状态
   if (initialState) {
-    console.log('子应用2接收到初始状态:', initialState)
+    console.log('子应用1接收到初始状态:', initialState)
     Object.keys(initialState).forEach((key) => {
       globalState[key] = initialState[key]
     })
+
+    console.log('sssssss', globalState)
   }
 
   // 监听全局状态变化
   onGlobalStateChange?.(
     (state: Record<string, any>, prev: Record<string, any>) => {
-      console.log('子应用2 - 全局状态变更：', state, prev)
+      console.log('子应用1 - 全局状态变更：', state, prev)
       // 更新响应式对象
       Object.keys(state).forEach((key) => {
         globalState[key] = state[key]
@@ -62,21 +64,21 @@ function render(props: any = {}) {
 
 renderWithQiankun({
   bootstrap() {
-    console.log('子应用2 bootstrap')
+    console.log('子应用1 bootstrap')
   },
   mount(props) {
-    console.log('子应用2 mount', props)
+    console.log('子应用1 mount', props)
     render(props)
   },
   unmount(props) {
-    console.log('子应用2 unmount')
+    console.log('子应用1 unmount')
     if (app) {
       app.unmount()
       app = null
     }
   },
   update(props) {
-    console.log('子应用2 update', props)
+    console.log('子应用1 update', props)
   },
 })
 
