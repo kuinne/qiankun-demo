@@ -4,27 +4,10 @@ import App from './App.vue'
 import { initGlobalState } from 'qiankun'
 import router from './router'
 import { MicroAppManager, isSubAppRoute, getSubAppByPath } from 'common'
-import type { MicroAppConfig } from 'common'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { useMicroApps } from './hooks/useMicroApps'
 
-// 子应用配置列表
-const microApps: MicroAppConfig[] = [
-  {
-    name: 'sub-app-1',
-    entry: '//localhost:5001',
-    activeRule: '/sub-app/sub-app-1',
-    container: '#sub-app-viewport',
-    defaultPath: '/sub-app/sub-app-1',
-    title: '子应用1',
-  },
-  {
-    name: 'sub-app-2',
-    entry: '//localhost:5002',
-    activeRule: '/sub-app/sub-app-2',
-    container: '#sub-app-viewport',
-    defaultPath: '/sub-app/sub-app-2',
-    title: '子应用2',
-  },
-]
+const { microApps } = useMicroApps()
 
 // 初始化全局状态
 const { onGlobalStateChange, setGlobalState } = initGlobalState({
@@ -47,6 +30,11 @@ setGlobalState({
 function render() {
   const app = createApp(App)
   app.use(router)
+
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
+
   app.mount('#app')
 }
 

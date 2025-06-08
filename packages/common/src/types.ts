@@ -1,21 +1,29 @@
-import type { MicroApp } from "qiankun";
+import type { MicroApp } from 'qiankun'
 
 /**
  * 子应用配置接口
  */
+export interface MenuItem {
+  title: string
+  path: string
+  icon?: string
+}
+
 export interface MicroAppConfig {
   /** 子应用名称 */
-  name: string;
+  name: string
   /** 子应用入口 */
-  entry: string;
+  entry: string
   /** 子应用激活规则（路径前缀） */
-  activeRule: string;
+  activeRule: string
   /** 子应用容器选择器 */
-  container: string;
+  container: string
   /** 子应用默认路径 */
-  defaultPath: string;
+  defaultPath: string
   /** 子应用标题 */
-  title?: string;
+  title: string
+  /** 子应用菜单 */
+  menus: MenuItem[]
 }
 
 /**
@@ -24,9 +32,9 @@ export interface MicroAppConfig {
 export type OnGlobalStateChangeCallback = (
   state: Record<string, any>,
   prev: Record<string, any>
-) => void;
+) => void
 
 /**
  * 设置全局状态的函数
  */
-export type SetGlobalStateFunction = (state: Record<string, any>) => void;
+export type SetGlobalStateFunction = (state: Record<string, any>) => void
