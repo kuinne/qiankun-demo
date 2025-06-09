@@ -74,8 +74,10 @@ onActivated(() => {
 
 <style scoped>
 .sub-app-container {
-  padding: 20px;
+  height: 100%;
   position: relative;
+  background-color: #fff;
+
   min-height: 300px;
 }
 
@@ -102,6 +104,7 @@ onActivated(() => {
 }
 
 #sub-app-viewport {
-  min-height: 300px;
+  height: 100%;
+  overflow: auto;
 }
 </style>
