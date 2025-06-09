@@ -13,7 +13,7 @@ export const useMicroApps = () => {
       entry: '//localhost:5001',
       activeRule: '/sub-app/sub-app-1',
       container: '#sub-app-viewport',
-      defaultPath: '/sub-app/sub-app-1',
+      defaultPath: '/sub-app/sub-app-1/',
       title: '子应用1',
       menus: [
         { title: '首页', path: '/sub-app/sub-app-1/', icon: 'HomeFilled' },
@@ -26,7 +26,7 @@ export const useMicroApps = () => {
       entry: '//localhost:5002',
       activeRule: '/sub-app/sub-app-2',
       container: '#sub-app-viewport',
-      defaultPath: '/sub-app/sub-app-2',
+      defaultPath: '/sub-app/sub-app-2/',
       title: '子应用2',
       menus: [
         { title: '首页', path: '/sub-app/sub-app-2/', icon: 'HomeFilled' },
