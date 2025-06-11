@@ -16,8 +16,6 @@ export interface MicroAppConfig {
   entry: string
   /** 子应用激活规则（路径前缀） */
   activeRule: string
-  /** 子应用容器选择器 */
-  container: string
   /** 子应用默认路径 */
   defaultPath: string
   /** 子应用标题 */

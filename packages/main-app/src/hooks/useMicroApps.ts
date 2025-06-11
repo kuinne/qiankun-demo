@@ -1,108 +1,87 @@
-import { useRoute } from 'vue-router'
-import { getSubAppByPath, MicroAppManager, type MicroAppConfig } from 'common'
-import { computed, reactive } from 'vue'
+import { MicroAppManager, type MicroAppConfig } from 'common'
+import { computed, reactive, ref, watch } from 'vue'
 
 // 创建子应用管理器实例
 const microAppManager = reactive(new MicroAppManager())
 
+// 子应用配置列表
+const microAppsConfig: MicroAppConfig[] = [
+  {
+    name: 'sub-app-1',
+    entry: '//localhost:5001',
+    activeRule: '/sub-app/sub-app-1/',
+    defaultPath: '/sub-app/sub-app-1/',
+    title: '子应用1',
+    menus: [
+      { title: '首页', path: '/sub-app/sub-app-1/', icon: 'HomeFilled' },
+      { title: '关于', path: '/sub-app/sub-app-1/about', icon: 'InfoFilled' },
+      { title: '用户', path: '/sub-app/sub-app-1/user', icon: 'UserFilled' },
+    ],
+  },
+  {
+    name: 'sub-app-2',
+    entry: '//localhost:5002',
+    activeRule: '/sub-app/sub-app-2/',
+    defaultPath: '/sub-app/sub-app-2/',
+    title: '子应用2',
+    menus: [
+      { title: '首页', path: '/sub-app/sub-app-2/', icon: 'HomeFilled' },
+      { title: '关于', path: '/sub-app/sub-app-2/about', icon: 'InfoFilled' },
+      { title: '用户', path: '/sub-app/sub-app-2/user', icon: 'UserFilled' },
+    ],
+  },
+]
+
+const defaultPathMap = reactive<Record<string, string>>({})
+
 export const useMicroApps = () => {
-  // 子应用配置列表
-  const microApps: MicroAppConfig[] = [
-    {
-      name: 'sub-app-1',
-      entry: '//localhost:5001',
-      activeRule: '/sub-app/sub-app-1',
-      container: '#sub-app-viewport',
-      defaultPath: '/sub-app/sub-app-1/',
-      title: '子应用1',
-      menus: [
-        { title: '首页', path: '/sub-app/sub-app-1/', icon: 'HomeFilled' },
-        { title: '关于', path: '/sub-app/sub-app-1/about', icon: 'InfoFilled' },
-        { title: '用户', path: '/sub-app/sub-app-1/user', icon: 'UserFilled' },
-      ],
-    },
-    {
-      name: 'sub-app-2',
-      entry: '//localhost:5002',
-      activeRule: '/sub-app/sub-app-2',
-      container: '#sub-app-viewport',
-      defaultPath: '/sub-app/sub-app-2/',
-      title: '子应用2',
-      menus: [
-        { title: '首页', path: '/sub-app/sub-app-2/', icon: 'HomeFilled' },
-        { title: '关于', path: '/sub-app/sub-app-2/about', icon: 'InfoFilled' },
-        { title: '用户', path: '/sub-app/sub-app-2/user', icon: 'UserFilled' },
-      ],
-    },
-  ]
-
-  const route = useRoute()
-
-  // 当前加载完成的子应用
-  const currentLoadedApp = computed(() => {
-    return microApps.find(
-      (app) => app.name === microAppManager.getCurrentAppName()
-    )
-  })
-
-  const mountMicroApp = async () => {
-    // 根据当前路由决定加载哪个子应用
-    const currentPath = route.path
-    console.log(`容器准备好，准备加载子应用，当前路径: ${currentPath}`)
-
-    // 获取当前路径对应的子应用配置
-    const subAppConfig = getSubAppByPath(currentPath, microApps)
-    if (!subAppConfig) {
-      console.log(`当前路径 ${currentPath} 没有对应的子应用配置`)
+  const microApps = reactive(microAppsConfig)
+  const mountMicroApp = async (
+    appConfig: MicroAppConfig,
+    containerId: string
+  ) => {
+    if (microAppManager.hasMicroApp(appConfig.name)) {
+      console.log(`子应用 ${appConfig.name} 已经加载，无需重新加载`)
       return
     }
-
-    // 如果当前已有子应用在运行，且与目标路径不匹配，先卸载
-    const currentAppName = microAppManager.getCurrentAppName()
-    if (currentAppName) {
-      if (currentAppName !== subAppConfig.name) {
-        console.log(
-          `当前子应用 ${currentAppName} 与路径 ${currentPath} 不匹配，准备卸载`
-        )
-        await microAppManager.unmount(currentAppName)
-      } else {
-        console.log(
-          `当前子应用 ${currentAppName} 与路径 ${currentPath} 匹配，无需重新加载`
-        )
-        return
-      }
-    }
-
-    // 加载子应用
-    console.log(`准备加载子应用 ${subAppConfig.name}`)
-    await microAppManager.mount(
-      subAppConfig.name,
-      subAppConfig.entry,
-      subAppConfig.container
-    )
+    await microAppManager.mount(appConfig.name, appConfig.entry, containerId)
   }
 
   // 卸载当前子应用的函数
-  const unmountMicroApp = async () => {
-    const currentAppName = microAppManager.getCurrentAppName()
-    if (currentAppName) {
-      await microAppManager.unmount(currentAppName)
-    }
+  const unmountMicroApp = async (appName: string) => {
+    await microAppManager.unmount(appName)
   }
 
-  const getMicroAppByPath = (path: string) => {
-    return microApps.find((app) => {
+  const getMicroAppConfigByPath = (path: string) => {
+    return microAppsConfig.find((app) => {
       if (path.startsWith(app.activeRule)) {
         return app
       }
     })
   }
 
+  const getLoadedMicroAppByPath = (path: string) => {
+    const microAppConfig = getMicroAppConfigByPath(path)
+    if (!microAppConfig) return
+    return microAppManager.getMicroApp(microAppConfig.name)
+  }
+
+  const updateMicroAppDefaultPath = (name: string, path: string) => {
+    defaultPathMap[name] = path
+  }
+
+  const getMicroAppDefaultPath = (name: string) => {
+    return defaultPathMap[name]
+  }
+
   return {
     microApps,
-    currentLoadedApp,
-    getMicroAppByPath,
+    microAppsConfig,
+    getLoadedMicroAppByPath,
+    getMicroAppConfigByPath,
     mountMicroApp,
     unmountMicroApp,
+    updateMicroAppDefaultPath,
+    getMicroAppDefaultPath,
   }
 }

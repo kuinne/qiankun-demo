@@ -18,29 +18,45 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useTabStore } from '../stores/tabStore'
+import { useTabNav, type TabItem } from '../hooks/useTabNav'
+import { useMicroApps } from '../hooks/useMicroApps'
+import { useRouteCache } from '../hooks/useRouteCache'
 
+const { getMicroAppConfigByPath } = useMicroApps()
 const router = useRouter()
 const route = useRoute()
-const tabStore = useTabStore()
+const { tabs: fullTabs, closeTab } = useTabNav()
+const { clearCachePaths } = useRouteCache()
 
 const currentPath = computed(() => route.path)
-const tabs = computed(() => tabStore.tabs)
+const currentMicroAppConfig = computed(() =>
+  getMicroAppConfigByPath(route.path)
+)
+const tabs = computed(() =>
+  fullTabs.value.filter(
+    (tab) => tab.microAppName === currentMicroAppConfig.value?.name
+  )
+)
 
 // 处理页签点击
-const handleTabClick = (tab: { path: string }) => {
+const handleTabClick = (tab: TabItem) => {
   router.push(tab.path)
 }
 
 // 处理关闭页签
-const handleCloseTab = (tab: { path: string }) => {
-  tabStore.closeTab(tab.path)
+const handleCloseTab = (tab: TabItem) => {
+  closeTab(tab.key)
   // 如果关闭的是当前页签，跳转到最后一个页签
   if (tab.path === currentPath.value) {
     const lastTab = tabs.value[tabs.value.length - 1]
     if (lastTab) {
       router.push(lastTab.path)
     }
+  }
+
+  if (tabs.value.length === 0) {
+    const microAppConfig = getMicroAppConfigByPath(tab.path)
+    microAppConfig && clearCachePaths(new RegExp(microAppConfig.activeRule))
   }
 }
 </script>
