@@ -64,9 +64,9 @@ export class MicroAppManager {
     initialState: any
   ): Promise<void> {
     // 如果正在加载或卸载，设置为待处理状态
-    // if (this.isLoading || this.isUnmounting) {
-    //   return
-    // }
+    if (this.isLoading || this.isUnmounting) {
+      return
+    }
 
     // 如果已经加载了相同的应用，不需要重新加载
     if (this.microApps[appName]) {
