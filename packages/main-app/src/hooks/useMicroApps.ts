@@ -93,11 +93,13 @@ export const useMicroApps = () => {
       containerId,
       initialState
     )
+    microApp.isMounted = true
   }
 
   // 卸载当前子应用的函数
-  const unmountMicroApp = async (appName: string) => {
-    await microAppManager.unmount(appName)
+  const unmountMicroApp = async (microApp: MicroApp) => {
+    await microAppManager.unmount(microApp.name)
+    microApp.isMounted = false
   }
 
   const getMicroAppByPath = (path: string) => {
