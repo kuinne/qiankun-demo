@@ -9,41 +9,22 @@
 </template>
 
 <script setup lang="ts">
-import type { MicroAppConfig } from 'common'
-import { useMicroApps } from '../hooks/useMicroApps'
-import { onBeforeUnmount } from 'vue'
+import { useMicroApps, MicroApp } from '../hooks/useMicroApps'
 import { ref, watch } from 'vue'
-import { onMounted } from 'vue'
-import { onActivated } from 'vue'
-import { useRoute } from 'vue-router'
 
 const props = defineProps<{
   containerId: string
-  microAppConfig: MicroAppConfig
+  microApp: MicroApp
 }>()
 
 const containerRef = ref<HTMLElement | null>(null)
 
-const { mountMicroApp, unmountMicroApp } = useMicroApps()
-
-const route = useRoute()
+const { mountMicroApp } = useMicroApps()
 
 watch(containerRef, () => {
   if (containerRef.value) {
-    mountMicroApp(props.microAppConfig, `#${props.containerId}`)
+    mountMicroApp(props.microApp, `#${props.containerId}`)
   }
-})
-
-onBeforeUnmount(() => {
-  //   unmountMicroApp(props.microAppConfig.name)
-})
-
-onMounted(() => {
-  console.log(
-    'MicroAppContainer onMounted',
-    props.microAppConfig.name,
-    props.containerId
-  )
 })
 </script>
 <style scoped>

@@ -17,7 +17,7 @@ export interface MicroAppConfig {
   /** 子应用激活规则（路径前缀） */
   activeRule: string
   /** 子应用默认路径 */
-  defaultPath: string
+  // defaultPath: string
   /** 子应用标题 */
   title: string
   /** 子应用菜单 */

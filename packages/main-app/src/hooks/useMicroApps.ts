@@ -1,5 +1,7 @@
-import { MicroAppManager, type MicroAppConfig } from 'common'
-import { computed, reactive, ref, watch } from 'vue'
+import { MicroAppManager, type MenuItem, type MicroAppConfig } from 'common'
+import { computed, defineComponent, h, reactive, ref, watch } from 'vue'
+import { useRoute, type Router } from 'vue-router'
+import MicroAppContainer from '../components/MicroAppContainer.vue'
 
 // 创建子应用管理器实例
 const microAppManager = reactive(new MicroAppManager())
@@ -32,19 +34,46 @@ const microAppsConfig: MicroAppConfig[] = [
   },
 ]
 
-const defaultPathMap = reactive<Record<string, string>>({})
+export class MicroApp {
+  name: string
+  entry: string
+  activeRule: string
+  title: string
+  menus: MenuItem[]
+  defaultPath: string
+  isMounted: boolean = false
+  constructor(config: MicroAppConfig) {
+    this.name = config.name
+    this.entry = config.entry
+    this.activeRule = config.activeRule
+    this.title = config.title
+    this.menus = config.menus
+    this.defaultPath = config.menus[0].path
+  }
+
+  updateDefaultPath(path: string) {
+    this.defaultPath = path
+  }
+}
+
+const microApps = ref(microAppsConfig.map((config) => new MicroApp(config)))
 
 export const useMicroApps = () => {
-  const microApps = reactive(microAppsConfig)
-  const mountMicroApp = async (
-    appConfig: MicroAppConfig,
-    containerId: string
-  ) => {
-    if (microAppManager.hasMicroApp(appConfig.name)) {
-      console.log(`子应用 ${appConfig.name} 已经加载，无需重新加载`)
+  const route = useRoute()
+
+  const currentRouteMicroApp = computed(() => {
+    return microApps.value.find((app) => {
+      if (route.path.startsWith(app.activeRule)) {
+        return app
+      }
+    })
+  })
+  const mountMicroApp = async (microApp: MicroApp, containerId: string) => {
+    if (microAppManager.hasMicroApp(microApp.name)) {
+      console.log(`子应用 ${microApp.name} 已经加载，无需重新加载`)
       return
     }
-    await microAppManager.mount(appConfig.name, appConfig.entry, containerId)
+    await microAppManager.mount(microApp.name, microApp.entry, containerId)
   }
 
   // 卸载当前子应用的函数
@@ -52,36 +81,43 @@ export const useMicroApps = () => {
     await microAppManager.unmount(appName)
   }
 
-  const getMicroAppConfigByPath = (path: string) => {
-    return microAppsConfig.find((app) => {
+  const getMicroAppByPath = (path: string) => {
+    return microApps.value.find((app) => {
       if (path.startsWith(app.activeRule)) {
         return app
       }
     })
   }
 
-  const getLoadedMicroAppByPath = (path: string) => {
-    const microAppConfig = getMicroAppConfigByPath(path)
-    if (!microAppConfig) return
-    return microAppManager.getMicroApp(microAppConfig.name)
-  }
-
-  const updateMicroAppDefaultPath = (name: string, path: string) => {
-    defaultPathMap[name] = path
-  }
-
-  const getMicroAppDefaultPath = (name: string) => {
-    return defaultPathMap[name]
+  const createMicroAppRoute = (microApp: MicroApp, router: Router) => {
+    router.addRoute({
+      path: `${microApp.activeRule}:pathMatch(.*)`,
+      name: microApp.name,
+      props: {
+        microApp: microApp,
+        containerId: `${microApp.name}-${Date.now()}`,
+      },
+      meta: {
+        cacheKey: microApp.name,
+      },
+      component: defineComponent({
+        name: microApp.name,
+        render() {
+          return h(MicroAppContainer, {
+            microApp: microApp,
+            containerId: `${microApp.name}-${Date.now()}`,
+          })
+        },
+      }),
+    })
   }
 
   return {
     microApps,
-    microAppsConfig,
-    getLoadedMicroAppByPath,
-    getMicroAppConfigByPath,
+    currentRouteMicroApp,
     mountMicroApp,
     unmountMicroApp,
-    updateMicroAppDefaultPath,
-    getMicroAppDefaultPath,
+    getMicroAppByPath,
+    createMicroAppRoute,
   }
 }

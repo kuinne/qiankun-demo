@@ -2,11 +2,15 @@ import { type Router } from 'vue-router'
 import { isSubAppRoute } from 'common'
 import { useMicroApps } from './useMicroApps'
 import { useTabNav } from './useTabNav'
+import { defineComponent, h } from 'vue'
+import MicroAppContainer from '../components/MicroAppContainer.vue'
+import { useCacheKeys } from './useCacheKeys'
 
 export const useRouteGuard = (router: Router) => {
   // 初始化微应用
-  const { getMicroAppConfigByPath, updateMicroAppDefaultPath } = useMicroApps()
+  const { getMicroAppByPath, createMicroAppRoute } = useMicroApps()
   const { addTab } = useTabNav()
+  const { addCacheKey } = useCacheKeys()
 
   // 路由守卫
   router.beforeEach(async (to, from, next) => {
@@ -16,10 +20,10 @@ export const useRouteGuard = (router: Router) => {
       const isToMicroApp = isSubAppRoute(to.path)
 
       if (isToMicroApp) {
-        const toMicroAppConfig = getMicroAppConfigByPath(to.path)
+        const toMicroApp = getMicroAppByPath(to.path)
 
-        if (toMicroAppConfig) {
-          const toMicroAppMenu = toMicroAppConfig?.menus.find(
+        if (toMicroApp) {
+          const toMicroAppMenu = toMicroApp.menus.find(
             (menu) => menu.path === to.path
           )
           if (toMicroAppMenu) {
@@ -28,10 +32,16 @@ export const useRouteGuard = (router: Router) => {
               key: toMicroAppMenu.path,
               path: to.path,
               title: toMicroAppMenu.title,
-              microAppName: toMicroAppConfig.name,
+              microAppName: toMicroApp.name,
             })
 
-            updateMicroAppDefaultPath(toMicroAppConfig.name, to.path)
+            toMicroApp.updateDefaultPath(to.path)
+          }
+          if (!router.hasRoute(toMicroApp.name)) {
+            createMicroAppRoute(toMicroApp, router)
+
+            addCacheKey(toMicroApp.name)
+            next({ ...to, replace: true })
           }
         }
       }

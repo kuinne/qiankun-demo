@@ -10,7 +10,7 @@
           <el-menu-item
             v-for="app in microApps"
             :key="app.name"
-            :class="{ 'is-active': currentMicroAppConfig?.name === app.name }"
+            :class="{ 'is-active': currentRouteMicroApp?.name === app.name }"
             @click="handleOpenMicroApp(app)"
           >
             {{ app.title }}
@@ -20,7 +20,7 @@
     </el-header>
 
     <el-container class="main-container">
-      <el-aside width="200px" class="main-aside" v-if="currentMicroAppConfig">
+      <el-aside width="200px" class="main-aside" v-if="currentRouteMicroApp">
         <el-menu
           router
           class="sub-menu"
@@ -30,7 +30,7 @@
           active-text-color="#409EFF"
         >
           <el-menu-item
-            v-for="menu in currentMicroAppConfig.menus"
+            v-for="menu in currentRouteMicroApp.menus"
             :key="menu.path"
             :index="menu.path"
           >
@@ -57,61 +57,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TabNav from './TabNav.vue'
-import { useMicroApps } from '../hooks/useMicroApps'
+import { useMicroApps, MicroApp } from '../hooks/useMicroApps'
 import { useCacheKeys } from '../hooks/useCacheKeys'
-import type { MicroAppConfig } from 'common'
-import { h } from 'vue'
-import MicroAppContainer from './MicroAppContainer.vue'
-import { defineComponent } from 'vue'
 
 const route = useRoute()
 
 const router = useRouter()
-const { microApps, getMicroAppConfigByPath, getMicroAppDefaultPath } =
-  useMicroApps()
+const { microApps, currentRouteMicroApp } = useMicroApps()
 
-const { addCacheKey, cacheKeys } = useCacheKeys()
-
-const currentMicroAppConfig = computed(() =>
-  getMicroAppConfigByPath(route.path)
-)
+const { cacheKeys } = useCacheKeys()
 
 const handleRouteJump = (path: string) => {
   router.push(path)
 }
 
-const handleOpenMicroApp = (microAppConfig: MicroAppConfig) => {
-  if (!router.hasRoute(microAppConfig.name)) {
-    router.addRoute({
-      path: `${microAppConfig.activeRule}:pathMatch(.*)`,
-      name: microAppConfig.name,
-      props: {
-        microAppConfig,
-        containerId: `${microAppConfig.name}-${Date.now()}`,
-      },
-      meta: {
-        cacheKey: microAppConfig.name,
-      },
-      component: defineComponent({
-        name: microAppConfig.name,
-        render() {
-          return h(MicroAppContainer, {
-            microAppConfig,
-            containerId: `${microAppConfig.name}-${Date.now()}`,
-          })
-        },
-      }),
-    })
-
-    addCacheKey(microAppConfig.name)
-  }
-
-  router.push(
-    getMicroAppDefaultPath(microAppConfig.name) || microAppConfig.defaultPath
-  )
+const handleOpenMicroApp = (microApp: MicroApp) => {
+  router.push(microApp.defaultPath)
 }
 </script>
 

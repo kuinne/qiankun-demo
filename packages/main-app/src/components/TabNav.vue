@@ -22,19 +22,16 @@ import { useTabNav, type TabItem } from '../hooks/useTabNav'
 import { useMicroApps } from '../hooks/useMicroApps'
 import { useRouteCache } from '../hooks/useRouteCache'
 
-const { getMicroAppConfigByPath } = useMicroApps()
+const { currentRouteMicroApp, getMicroAppByPath } = useMicroApps()
 const router = useRouter()
 const route = useRoute()
 const { tabs: fullTabs, closeTab } = useTabNav()
 const { clearCachePaths } = useRouteCache()
 
 const currentPath = computed(() => route.path)
-const currentMicroAppConfig = computed(() =>
-  getMicroAppConfigByPath(route.path)
-)
 const tabs = computed(() =>
   fullTabs.value.filter(
-    (tab) => tab.microAppName === currentMicroAppConfig.value?.name
+    (tab) => tab.microAppName === currentRouteMicroApp.value?.name
   )
 )
 
@@ -55,8 +52,8 @@ const handleCloseTab = (tab: TabItem) => {
   }
 
   if (tabs.value.length === 0) {
-    const microAppConfig = getMicroAppConfigByPath(tab.path)
-    microAppConfig && clearCachePaths(new RegExp(microAppConfig.activeRule))
+    const microApp = getMicroAppByPath(tab.path)
+    microApp && clearCachePaths(new RegExp(microApp.activeRule))
   }
 }
 </script>
