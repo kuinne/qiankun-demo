@@ -4,8 +4,15 @@
       <div class="header-content">
         <div class="logo">主应用</div>
         <el-menu mode="horizontal" class="main-menu">
-          <el-menu-item index="/" @click="handleRouteJump('/')"
+          <el-menu-item
+            :class="{ 'is-active': route.path === '/home' }"
+            @click="handleRouteJump('/home')"
             >首页</el-menu-item
+          >
+          <el-menu-item
+            :class="{ 'is-active': route.path === '/app-list' }"
+            @click="handleRouteJump('/app-list')"
+            >应用列表</el-menu-item
           >
           <el-menu-item
             v-for="app in microApps"

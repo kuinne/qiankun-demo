@@ -12,8 +12,8 @@ const microAppsConfig: MicroAppConfig[] = [
     name: 'sub-app-1',
     entry: '//localhost:5001',
     activeRule: '/sub-app/sub-app-1/',
-    defaultPath: '/sub-app/sub-app-1/',
     title: '子应用1',
+    icon: 'Monitor',
     menus: [
       { title: '首页', path: '/sub-app/sub-app-1/', icon: 'HomeFilled' },
       { title: '关于', path: '/sub-app/sub-app-1/about', icon: 'InfoFilled' },
@@ -24,8 +24,8 @@ const microAppsConfig: MicroAppConfig[] = [
     name: 'sub-app-2',
     entry: '//localhost:5002',
     activeRule: '/sub-app/sub-app-2/',
-    defaultPath: '/sub-app/sub-app-2/',
     title: '子应用2',
+    icon: 'Connection',
     menus: [
       { title: '首页', path: '/sub-app/sub-app-2/', icon: 'HomeFilled' },
       { title: '关于', path: '/sub-app/sub-app-2/about', icon: 'InfoFilled' },
@@ -39,6 +39,7 @@ export class MicroApp {
   entry: string
   activeRule: string
   title: string
+  icon: string
   menus: MenuItem[]
   defaultPath: string
   isMounted: boolean = false
@@ -48,6 +49,7 @@ export class MicroApp {
     this.activeRule = config.activeRule
     this.title = config.title
     this.menus = config.menus
+    this.icon = config.icon
     this.defaultPath = config.menus[0].path
   }
 

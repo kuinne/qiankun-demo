@@ -4,8 +4,24 @@ import type { RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/Home.vue'),
+    redirect: 'home',
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: () => import('../views/Home.vue'),
+      },
+      {
+        path: 'app-list',
+        name: 'AppList',
+        component: () => import('../views/AppList.vue'),
+        meta: {
+          title: '应用列表',
+          icon: 'Grid',
+          closable: false,
+        },
+      },
+    ],
   },
   // 通用子应用路由，用于处理未知子应用
   // {
