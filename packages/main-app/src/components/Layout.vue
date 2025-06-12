@@ -15,12 +15,15 @@
             >应用列表</el-menu-item
           >
           <el-menu-item
-            v-for="app in microApps"
+            v-for="app in mountedMicroApps"
             :key="app.name"
             :class="{ 'is-active': currentRouteMicroApp?.name === app.name }"
             @click="handleOpenMicroApp(app)"
           >
             {{ app.title }}
+            <el-icon @click="handleCloseMicroApp(app)">
+              <Close />
+            </el-icon>
           </el-menu-item>
         </el-menu>
       </div>
@@ -68,13 +71,27 @@ import { useRoute, useRouter } from 'vue-router'
 import TabNav from './TabNav.vue'
 import { useMicroApps, MicroApp } from '../hooks/useMicroApps'
 import { useCacheKeys } from '../hooks/useCacheKeys'
+import { Close } from '@element-plus/icons-vue'
+import { computed } from 'vue'
+import { useTabNav } from '../hooks/useTabNav'
 
 const route = useRoute()
 
 const router = useRouter()
-const { microApps, currentRouteMicroApp } = useMicroApps()
+const {
+  microApps,
+  currentRouteMicroApp,
+  unmountMicroApp,
+  removeMicroAppRoute,
+} = useMicroApps()
+
+const mountedMicroApps = computed(() => {
+  return microApps.value.filter((app) => app.isMounted)
+})
 
 const { cacheKeys } = useCacheKeys()
+
+const { closeTab } = useTabNav()
 
 const handleRouteJump = (path: string) => {
   router.push(path)
@@ -82,6 +99,23 @@ const handleRouteJump = (path: string) => {
 
 const handleOpenMicroApp = (microApp: MicroApp) => {
   router.push(microApp.defaultPath)
+}
+
+const handleCloseMicroApp = async (microApp: MicroApp) => {
+  const nextMicroApp = mountedMicroApps.value.find(
+    (app) => app.name !== microApp.name
+  )
+  await unmountMicroApp(microApp)
+  await removeMicroAppRoute(microApp, router)
+  microApp.menus.forEach((menu) => {
+    closeTab(menu.path)
+  })
+
+  if (nextMicroApp && route.path !== nextMicroApp.defaultPath) {
+    router.push(nextMicroApp.defaultPath)
+  } else {
+    router.push('/app-list')
+  }
 }
 </script>
 

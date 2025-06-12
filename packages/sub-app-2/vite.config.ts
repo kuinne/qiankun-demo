@@ -6,5 +6,8 @@ export default viteConfig({
     server: {
       port: 5002,
     },
+    preview: {
+      port: 5002,
+    },
   },
 })

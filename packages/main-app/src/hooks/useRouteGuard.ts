@@ -2,15 +2,11 @@ import { type Router } from 'vue-router'
 import { isSubAppRoute } from 'common'
 import { useMicroApps } from './useMicroApps'
 import { useTabNav } from './useTabNav'
-import { defineComponent, h } from 'vue'
-import MicroAppContainer from '../components/MicroAppContainer.vue'
-import { useCacheKeys } from './useCacheKeys'
 
 export const useRouteGuard = (router: Router) => {
   // 初始化微应用
   const { getMicroAppByPath, createMicroAppRoute } = useMicroApps()
   const { addTab } = useTabNav()
-  const { addCacheKey } = useCacheKeys()
 
   // 路由守卫
   router.beforeEach(async (to, from, next) => {
@@ -39,8 +35,6 @@ export const useRouteGuard = (router: Router) => {
           }
           if (!router.hasRoute(toMicroApp.name)) {
             createMicroAppRoute(toMicroApp, router)
-
-            addCacheKey(toMicroApp.name)
             next({ ...to, replace: true })
           }
         }

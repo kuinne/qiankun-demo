@@ -2,6 +2,7 @@ import { MicroAppManager, type MenuItem, type MicroAppConfig } from 'common'
 import { computed, defineComponent, h, reactive, ref, watch } from 'vue'
 import { useRoute, type Router } from 'vue-router'
 import MicroAppContainer from '../components/MicroAppContainer.vue'
+import { useCacheKeys } from './useCacheKeys'
 
 // 创建子应用管理器实例
 const microAppManager = reactive(new MicroAppManager())
@@ -56,12 +57,18 @@ export class MicroApp {
   updateDefaultPath(path: string) {
     this.defaultPath = path
   }
+
+  reset() {
+    this.isMounted = false
+    this.defaultPath = this.menus[0].path
+  }
 }
 
 const microApps = ref(microAppsConfig.map((config) => new MicroApp(config)))
 
 export const useMicroApps = () => {
   const route = useRoute()
+  const { cacheKeys, removeCacheKey, addCacheKey } = useCacheKeys()
 
   const fetchMicroAppData = async (microApp: MicroApp) => {
     return new Promise((resolve) => {
@@ -101,7 +108,7 @@ export const useMicroApps = () => {
   // 卸载当前子应用的函数
   const unmountMicroApp = async (microApp: MicroApp) => {
     await microAppManager.unmount(microApp.name)
-    microApp.isMounted = false
+    microApp.reset()
   }
 
   const getMicroAppByPath = (path: string) => {
@@ -133,6 +140,14 @@ export const useMicroApps = () => {
         },
       }),
     })
+    addCacheKey(microApp.name)
+  }
+
+  const removeMicroAppRoute = (microApp: MicroApp, router: Router) => {
+    if (cacheKeys.value.includes(microApp.name)) {
+      removeCacheKey(microApp.name)
+    }
+    router.removeRoute(microApp.name)
   }
 
   return {
@@ -142,5 +157,6 @@ export const useMicroApps = () => {
     unmountMicroApp,
     getMicroAppByPath,
     createMicroAppRoute,
+    removeMicroAppRoute,
   }
 }

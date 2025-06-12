@@ -45,6 +45,7 @@ onMounted(() => {
     receivedMsg.value = globalState.message
   }
 
+  // @ts-ignore
   window.subApp = 'sub-app-1'
 })
 </script>
