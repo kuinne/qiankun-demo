@@ -61,6 +61,19 @@ const microApps = ref(microAppsConfig.map((config) => new MicroApp(config)))
 export const useMicroApps = () => {
   const route = useRoute()
 
+  const fetchMicroAppData = async (microApp: MicroApp) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          message: 'hello from main-app',
+          from: 'main-app',
+          timestamp: new Date().getTime(),
+          to: microApp.name,
+        })
+      }, 300)
+    })
+  }
+
   const currentRouteMicroApp = computed(() => {
     return microApps.value.find((app) => {
       if (route.path.startsWith(app.activeRule)) {
@@ -73,7 +86,13 @@ export const useMicroApps = () => {
       console.log(`子应用 ${microApp.name} 已经加载，无需重新加载`)
       return
     }
-    await microAppManager.mount(microApp.name, microApp.entry, containerId)
+    const initialState = await fetchMicroAppData(microApp)
+    await microAppManager.mount(
+      microApp.name,
+      microApp.entry,
+      containerId,
+      initialState
+    )
   }
 
   // 卸载当前子应用的函数

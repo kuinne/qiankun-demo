@@ -60,7 +60,8 @@ export class MicroAppManager {
   async mount(
     appName: string,
     entry: string,
-    container: string = '#sub-app-viewport'
+    container: string = '#sub-app-viewport',
+    initialState: any
   ): Promise<void> {
     // 如果正在加载或卸载，设置为待处理状态
     // if (this.isLoading || this.isUnmounting) {
@@ -83,11 +84,7 @@ export class MicroAppManager {
           entry: entry,
           container: container,
           props: {
-            initialState: {
-              message: 'hello from main-app',
-              from: 'main-app',
-              timestamp: new Date().getTime(),
-            },
+            initialState,
           },
         },
         {
