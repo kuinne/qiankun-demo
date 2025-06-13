@@ -1,16 +1,16 @@
-import { loadMicroApp } from 'qiankun'
-import type { MicroApp } from 'qiankun'
+import { loadMicroApp } from "qiankun";
+import type { MicroApp } from "qiankun";
 
 /**
  * 子应用管理器类
  */
 export class MicroAppManager {
   /** 子应用实例映射 */
-  private microApps: Record<string, MicroApp> = {}
+  private microApps: Record<string, MicroApp> = {};
   /** 是否正在加载 */
-  private isLoading: boolean = false
+  private isLoading: boolean = false;
   /** 是否正在卸载 */
-  private isUnmounting: boolean = false
+  private isUnmounting: boolean = false;
 
   constructor() {}
 
@@ -18,8 +18,8 @@ export class MicroAppManager {
    * 重置状态
    */
   private reset() {
-    this.isLoading = false
-    this.isUnmounting = false
+    this.isLoading = false;
+    this.isUnmounting = false;
   }
 
   /**
@@ -29,24 +29,24 @@ export class MicroAppManager {
    */
   async unmount(appName: string): Promise<void> {
     // 如果指定了应用名称，则卸载指定的应用
-    if (!this.microApps[appName]) return Promise.resolve()
+    if (!this.microApps[appName]) return Promise.resolve();
 
-    if (this.isUnmounting) return Promise.resolve()
+    if (this.isUnmounting) return Promise.resolve();
 
-    this.isUnmounting = true
+    this.isUnmounting = true;
 
     try {
-      console.log(`开始卸载子应用 ${appName}...`)
-      await this.microApps[appName].unmount()
-      console.log(`子应用 ${appName} 已成功卸载`)
-      delete this.microApps[appName]
-      this.reset()
+      console.log(`开始卸载子应用 ${appName}...`);
+      await this.microApps[appName].unmount();
+      console.log(`子应用 ${appName} 已成功卸载`);
+      delete this.microApps[appName];
+      this.reset();
 
-      return Promise.resolve()
+      return Promise.resolve();
     } catch (error) {
-      console.error(`子应用 ${appName} 卸载失败:`, error)
-      this.reset()
-      return Promise.reject(error)
+      console.error(`子应用 ${appName} 卸载失败:`, error);
+      this.reset();
+      return Promise.reject(error);
     }
   }
 
@@ -60,47 +60,45 @@ export class MicroAppManager {
   async mount(
     appName: string,
     entry: string,
-    container: string = '#sub-app-viewport',
-    initialState: any
+    container: string = "#sub-app-viewport",
+    props: any
   ): Promise<void> {
     // 如果正在加载或卸载，设置为待处理状态
     if (this.isLoading || this.isUnmounting) {
-      return
+      return;
     }
 
     // 如果已经加载了相同的应用，不需要重新加载
     if (this.microApps[appName]) {
-      console.log(`子应用 ${appName} 已经加载，无需重新加载`)
-      return
+      console.log(`子应用 ${appName} 已经加载，无需重新加载`);
+      return;
     }
 
-    this.isLoading = true
+    this.isLoading = true;
     try {
-      console.log(`开始加载子应用 ${appName}...`)
+      console.log(`开始加载子应用 ${appName}...`);
 
       this.microApps[appName] = loadMicroApp(
         {
           name: appName,
           entry: entry,
           container: container,
-          props: {
-            initialState,
-          },
+          props,
         },
         {
           sandbox: {
             experimentalStyleIsolation: true,
           },
         }
-      )
+      );
 
-      await this.microApps[appName].mountPromise
+      await this.microApps[appName].mountPromise;
 
-      console.log(`子应用 ${appName} 加载成功`)
-      this.isLoading = false
+      console.log(`子应用 ${appName} 加载成功`);
+      this.isLoading = false;
     } catch (error) {
-      console.error(`加载子应用 ${appName} 时发生错误:`, error)
-      this.reset()
+      console.error(`加载子应用 ${appName} 时发生错误:`, error);
+      this.reset();
     }
   }
 
@@ -110,7 +108,7 @@ export class MicroAppManager {
    * @returns 子应用实例
    */
   getMicroApp(appName: string): MicroApp | undefined {
-    return this.microApps[appName]
+    return this.microApps[appName];
   }
 
   /**
@@ -119,6 +117,6 @@ export class MicroAppManager {
    * @returns 是否存在
    */
   hasMicroApp(appName: string): boolean {
-    return !!this.microApps[appName]
+    return !!this.microApps[appName];
   }
 }

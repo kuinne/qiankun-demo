@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { globalState, setGlobalState } from './main'
+import { useMainAppActions } from 'common'
 
-const router = useRouter()
 const count = ref(0)
-console.log('subApp000000000000', window.subApp)
+const { mainAppState, mainAppActions } = useMainAppActions()
 </script>
 
 <template>
@@ -24,9 +23,9 @@ console.log('subApp000000000000', window.subApp)
         <button @click="count++">计数器: {{ count }}</button>
         <p>
           当前全局状态:
-          <pre>{{ globalState }}</pre>
+          <pre>{{ mainAppState }}</pre>
         </p>
-        <button @click="setGlobalState && setGlobalState({ from: 'sub-app-2', message: '来自子应用2的消息', timestamp: Date.now() })">
+        <button @click="mainAppActions.sendStateToMainApp && mainAppActions.sendStateToMainApp({ from: 'sub-app-2', message: '来自子应用2的消息', timestamp: Date.now() })">
           发送全局消息
         </button>
       </div>

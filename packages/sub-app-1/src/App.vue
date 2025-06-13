@@ -1,52 +1,33 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive } from 'vue'
-import { useRoute } from 'vue-router'
-import { setGlobalState, globalState } from './main'
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import { useMainAppActions } from "common";
 
-const message = ref('')
-const receivedMsg = ref('')
-const route = useRoute()
+const message = ref("");
+const route = useRoute();
+
+const { mainAppState, mainAppActions } = useMainAppActions();
+
+const receivedMsg = computed(() => mainAppState.value.message);
 
 // 发送消息到主应用
 const sendMessageToMain = () => {
-  if (setGlobalState) {
-    setGlobalState({
-      message: message.value,
-      from: 'sub-app-1',
-      timestamp: new Date().getTime(),
-    })
-  }
-}
+  mainAppActions.sendStateToMainApp({
+    message: message.value,
+    from: "sub-app-1",
+    timestamp: new Date().getTime(),
+  });
+};
 
 // 修改主应用背景色
 const changeBody = () => {
-  document.body.style.backgroundColor = 'red'
-}
-
-// 监听全局状态变化
-watch(
-  () => globalState.message,
-  (newVal, oldVal) => {
-    console.log('watch globalState.message 变化:', newVal, oldVal)
-    if (newVal) {
-      receivedMsg.value = newVal
-    }
-  },
-  { immediate: true }
-)
+  document.body.style.backgroundColor = "red";
+};
 
 // 组件挂载时
 onMounted(() => {
-  console.log('子应用 globalState.message:', globalState.message)
-  console.log('子应用 整个 globalState:', globalState)
-
-  // 如果已经有值，直接使用
-  if (globalState.message) {
-    receivedMsg.value = globalState.message
-  }
-
-  window.subApp = 'sub-app-1'
-})
+  window.subApp = "sub-app-1";
+});
 </script>
 
 <template>
@@ -74,7 +55,7 @@ onMounted(() => {
 
       <div class="debug-info">
         <h4>调试信息:</h4>
-        <pre>{{ JSON.stringify(globalState, null, 2) }}</pre>
+        <pre>{{ JSON.stringify(mainAppState, null, 2) }}</pre>
       </div>
 
       <div class="send-message">
