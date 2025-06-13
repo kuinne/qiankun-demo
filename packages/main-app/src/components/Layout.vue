@@ -67,56 +67,56 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import TabNav from './TabNav.vue'
-import { useMicroApps, MicroApp } from '../hooks/useMicroApps'
-import { useCacheKeys } from '../hooks/useCacheKeys'
-import { Close } from '@element-plus/icons-vue'
-import { computed } from 'vue'
-import { useTabNav } from '../hooks/useTabNav'
+import { useRoute, useRouter } from "vue-router";
+import TabNav from "./TabNav.vue";
+import { useMicroApps, MicroApp } from "../hooks/useMicroApps";
+import { useCacheKeys } from "../hooks/useCacheKeys";
+import { Close } from "@element-plus/icons-vue";
+import { computed } from "vue";
+import { useTabNav } from "../hooks/useTabNav";
 
-const route = useRoute()
+const route = useRoute();
 
-const router = useRouter()
+const router = useRouter();
 const {
   microApps,
   currentRouteMicroApp,
   unmountMicroApp,
   removeMicroAppRoute,
-} = useMicroApps()
+} = useMicroApps();
 
 const mountedMicroApps = computed(() => {
-  return microApps.value.filter((app) => app.isMounted)
-})
+  return microApps.value.filter((app) => app.isMounted);
+});
 
-const { cacheKeys } = useCacheKeys()
+const { cacheKeys } = useCacheKeys();
 
-const { closeTab } = useTabNav()
+const { closeTab } = useTabNav();
 
 const handleRouteJump = (path: string) => {
-  router.push(path)
-}
+  router.push(path);
+};
 
 const handleOpenMicroApp = (microApp: MicroApp) => {
-  router.push(microApp.defaultPath)
-}
+  router.push(microApp.defaultPath);
+};
 
 const handleCloseMicroApp = async (microApp: MicroApp) => {
   const nextMicroApp = mountedMicroApps.value.find(
     (app) => app.name !== microApp.name
-  )
-  await unmountMicroApp(microApp)
-  await removeMicroAppRoute(microApp, router)
+  );
+  await unmountMicroApp(microApp);
+  await removeMicroAppRoute(microApp, router);
   microApp.menus.forEach((menu) => {
-    closeTab(menu.path)
-  })
+    closeTab(menu.path);
+  });
 
   if (nextMicroApp && route.path !== nextMicroApp.defaultPath) {
-    router.push(nextMicroApp.defaultPath)
+    router.push(nextMicroApp.defaultPath);
   } else {
-    router.push('/app-list')
+    router.push("/app-list");
   }
-}
+};
 </script>
 
 <style scoped>

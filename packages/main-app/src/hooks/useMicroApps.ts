@@ -100,7 +100,9 @@ export const useMicroApps = () => {
     const initialState = await fetchMicroAppData(microApp);
     await microAppManager.mount(microApp.name, microApp.entry, containerId, {
       initialState,
-      navigateTo: (path: string) => {
+      navigateTo: (path: string, opts?: any) => {
+        if (opts.forceRefresh) {
+        }
         router.push(path);
       },
     });
