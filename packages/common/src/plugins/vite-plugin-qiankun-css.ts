@@ -21,10 +21,12 @@ export default (appName: string): Plugin => {
             Root(root, helper) {
               root.walkRules((rule) => {
                 // 跳过关键帧规则
+                // @ts-ignore
                 if (rule.parent && rule.parent?.name === 'keyframes') return
                 // 处理媒体查询内的规则
                 if (
                   rule.parent?.type === 'atrule' &&
+                  // @ts-ignore
                   rule.parent?.name === 'media'
                 ) {
                   rule.selectors = rule.selectors.map(

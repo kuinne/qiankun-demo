@@ -2,7 +2,10 @@
   "name": "common",
   "version": "1.0.0",
   "description": "通用依赖包，包含子应用管理逻辑",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -21,6 +24,7 @@
     "vue-router": "4"
   },
   "devDependencies": {
+    "@module-federation/vite": "^1.4.1",
     "typescript": "~5.8.3"
   },
   "peerDependencies": {
